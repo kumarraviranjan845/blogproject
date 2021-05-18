@@ -1,0 +1,37 @@
+nav {
+  background-color: #e3f2fd;
+}
+
+#main {
+  margin-top: 70px;
+}
+
+.navbar-brand {
+  font-size: x-large;
+}
+
+.nav-link {
+  background-color: #e3f2fd;
+  border-radius: 12px;
+}
+
+.nav-link:hover {
+  background-color: #fff;
+  border-radius: 12px;
+  margin-right: 3px;
+  margin-left: 3px;
+}
+
+.text-decoration-none {
+  margin-right: 5px;
+}
+
+input{
+  margin-top: 5px;
+}
+
+.rounded-circle {
+  margin-right: 2rem;
+}
+
+

@@ -1,0 +1,45 @@
+{% extends 'blog/base.html' %}
+{% load hitcount_tags %}
+{% load humanize %}
+{% block content %}
+    <div class="card w-80 mb-3">
+      <div class="card-header border-0">
+        <img class="rounded-circle" src="{{ object.author.profile.image.url }}" alt="Profile-Image" width="50px" height="50px">
+        <a class="text-decoration-none" href="{% url 'user-blogs' object.author.username %}">{{ object.author }}</a>
+        <i>Posted {{ blogpost.whenposted }}</i>
+      </div>
+      <div class="card-body">
+        <h5 class="card-title">{{ object.title }}</h5>
+        <p class="card-text">{{ object.content }}</p>
+      </div>
+      <div class="card-footer border-0 text-muted">
+        {% if object.author == user %}
+          <div class="mb-2 mt-2">
+            <a class="btn btn-secondary" href="{% url 'blog-update' object.id %}">Update</a>
+            <a class="btn btn-danger" href="{% url 'blog-delete' object.id %}">Delete</a>
+          </div>
+        {% endif %}
+        <i>Last Updated {{ blogpost.whenupdated }}</i>
+        <form action="{% url 'like-post' object.pk %}" method="POST">
+          {% csrf_token %}
+          <div class="mb-2 mt-2">
+            {% if is_liked %}
+              <button type="submit", name="blogpost_id", value="{{ blogpost.id }}" class="btn btn-danger btn-sm">
+                Dislike
+                <i class="fas fa-thumbs-down"></i>
+              </button>
+            {% else %}
+              <button type="submit", name="blogpost_id", value="{{ blogpost.id }}" class="btn btn-primary btn-sm">
+                Like
+                <i class="fas fa-thumbs-up"></i>
+              </button>
+            {% endif %}
+            {{ total_likes }} 
+            <i class="fas fa-thumbs-up"></i>
+            | {% get_hit_count for object %}
+            <i class="fas fa-eye"></i>
+          </div>
+        </form>
+      </div>
+    </div>
+{% endblock content %}

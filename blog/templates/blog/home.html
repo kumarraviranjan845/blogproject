@@ -1,0 +1,47 @@
+{% extends 'blog/base.html' %}
+{% load humanize %}
+{% block content %}
+  {% for blogpost in blogposts %}
+    <div class="card w-80 mb-3">
+      <div class="card-header border-0">
+        <img class="rounded-circle" src="{{ blogpost.author.profile.image.url }}" alt="Profile-Image" width="50px" height="50px">
+        <a class="text-decoration-none" href="{% url 'user-blogs' blogpost.author.username %}">{{ blogpost.author }}</a>
+        <i>Posted {{ blogpost.whenposted }}</i>
+      </div>
+      <div class="card-body">
+        <h5><a class="card-title text-decoration-none" href="{% url 'blog-detail' blogpost.id %}">{{ blogpost.title }}</a></h5>
+        <p class="card-text text-truncate">{{ blogpost.content }}</p>
+      </div>
+      <div class="card-footer border-0 text-muted">
+        <i>Last Updated {{ blogpost.whenupdated }}</i>
+      </div>
+    </div>
+  {% endfor %}
+  {% if is_paginated %}
+  <ul class="pagination">
+    {% if page_obj.has_previous %}
+      <li class="page-item">
+        <a class="page-link" href="?page=1" aria-label="Previous">
+          <span aria-hidden="true">&laquo;</span>
+        </a>
+      </li>
+    {% endif %}
+    {% for num in page_obj.paginator.page_range %}
+      {% if page_obj.number == num %} 
+        <li class="page-item active">
+          <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+        </li>
+      {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+        <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+      {% endif %}
+    {% endfor %}
+    {% if page_obj.has_next %}
+      <li class="page-item">
+        <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}" aria-label="Next">
+          <span aria-hidden="true">&raquo;</span>
+        </a>
+      </li>
+    {% endif %}
+  </ul>
+  {% endif %}
+{% endblock content %}
