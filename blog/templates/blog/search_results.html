@@ -1,0 +1,20 @@
+{% extends 'blog/base.html' %}
+{% load humanize %}
+{% block content %}
+    {% for blogpost in blogposts %}
+        <div class="card w-80 mb-3">
+        <div class="card-header border-0">
+            <img class="rounded-circle" src="{{ blogpost.author.profile.image.url }}" alt="Profile-Image" width="50px" height="50px">
+            <a class="text-decoration-none" href="{% url 'user-blogs' blogpost.author.username %}">{{ blogpost.author }}</a>
+            <i>Posted {{ blogpost.whenposted }}</i>
+        </div>
+        <div class="card-body">
+            <h5><a class="card-title text-decoration-none" href="{% url 'blog-detail' blogpost.id %}">{{ blogpost.title }}</a></h5>
+            <p class="card-text text-truncate">{{ blogpost.content }}</p>
+        </div>
+        <div class="card-footer border-0 text-muted">
+            <i>Last Updated {{ blogpost.whenupdated }}</i>
+        </div>
+        </div>
+    {% endfor %}
+{% endblock content %}

@@ -1,7 +1,7 @@
 {% extends 'blog/base.html' %}
 % load humanize %}
 {% block content %}
-<h5 class="mb-3 "> Liked by {{ view.kwargs.username }} ({{ page_obj.paginator.count }})</h5>
+<h5 class="mb-3 "> Your Likes ({{ page_obj.paginator.count }})</h5>
   {% for blogpost in blogposts %}
     <div class="card w-80 mb-3">
       <div class="card-header border-0">

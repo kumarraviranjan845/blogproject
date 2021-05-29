@@ -1,0 +1,32 @@
+{% extends 'blog/base.html' %}
+{% load crispy_forms_tags %}
+{% block content %}
+  <div class="card mb-3 bg-secondary">
+    <div class="card-header bg-info">
+      <legend>Please Leave Your Message Here!</legend>
+    </div>
+    <div class="card-body">
+      <form action="{% url 'contact' %}" method="POST">
+        {% csrf_token %}
+        {{ form|crispy }}
+        <div class="form-group mt-3">
+          <button class="btn btn-warning" type="submit">Send</button>
+        </div>
+      </form>
+    </div>
+  </div>
+{% endblock content %}
+{% block side %}
+{% if admin_contacts %}
+  {% for admin_contact in admin_contacts %}
+    <div class="card bg-info">
+      <div class="card-body">
+        <i class="fas fa-envelope-open-text"></i>
+        <p>{{ admin_contact.email }}</p>
+        <i class="fas fa-phone"></i>
+        <p>{{ admin_contact.phone }}</p>
+      </div>
+    </div>
+  {% endfor %}
+{% endif %}
+{% endblock side %}

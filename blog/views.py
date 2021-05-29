@@ -1,10 +1,12 @@
 from django.shortcuts import render, get_object_or_404, HttpResponseRedirect, redirect
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.auth.models import User
-from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView, View
+from django.views.generic import ListView, CreateView, UpdateView, DeleteView
 from .models import BlogPost
 from django.urls import reverse
 from hitcount.views import HitCountDetailView
+from django.db.models import Q
+from django.contrib import messages
 
 class PostListView(ListView):
     model = BlogPost
@@ -13,7 +15,7 @@ class PostListView(ListView):
     ordering = ['-date_posted']
     paginate_by = 3
     
-class UserPostListView(LoginRequiredMixin, ListView):
+class UserPostListView(ListView):
     model = BlogPost
     template_name = 'blog/user_blogs.html'
     context_object_name = 'blogposts'
@@ -23,7 +25,7 @@ class UserPostListView(LoginRequiredMixin, ListView):
         user = get_object_or_404(User, username=self.kwargs.get('username'))
         return BlogPost.objects.filter(author=user).order_by('-date_posted')
     
-class PostDetailView(LoginRequiredMixin, HitCountDetailView):
+class PostDetailView(HitCountDetailView):
     model = BlogPost
     count_hit = True
     
@@ -90,13 +92,21 @@ class UserLikeView(LoginRequiredMixin, ListView):
     def get_queryset(self):
         user = get_object_or_404(User, username=self.kwargs.get('username'))
         return BlogPost.objects.filter(likes=user).order_by('-date_posted')
-    
-# def user_like(request):
-#     user = User.objects.filter(username='username')
-#     context = {
-#         'liked_posts': BlogPost.objects.filter(likes=user)
-#     }
-#     return render(request, 'blog/user_likes.html', context)
 
+def search_result(request):
+    if request.method == "POST":
+        query = request.POST['keyword']
+        blogposts = BlogPost.objects.filter(
+            Q(title__icontains=query) | Q(content__icontains=query) |Q(author__username__icontains=query))
+        if query and blogposts:
+            messages.success(request, f"Your searched results for '{query}'")
+            return render(request, 'blog/search_results.html', {'query': query, 'blogposts': blogposts})
+        elif query and not blogposts:
+            messages.warning(request, f"Sorry! '{query}' doesn't match with any blogposts. Please try with another keyword.")
+            return render(request, 'blog/search_results.html')
+        else:
+            messages.warning(request, f"You have not searched for anything. Please Enter a keyword to search.")
+            return render(request, 'blog/search_results.html')
+    
 def about(request):
     return render(request, 'blog/about.html', {'title': 'About'})

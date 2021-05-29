@@ -2,8 +2,11 @@ from django.shortcuts import render, redirect
 from django.contrib import messages
 from .forms import UserRegisterationForm, UserUpdateForm, ProfileUpdateForm
 from django.contrib.auth.decorators import login_required
-from blog.models import BlogPost
-from django.contrib.auth.models import User
+from .forms import ContactForm
+from django.core.mail import send_mail
+from django.conf import settings
+from .models import AdminContact
+
 
 def register(request):
     if request.method == 'POST':
@@ -37,3 +40,30 @@ def profile(request):
         'profile_form': profile_form,
     }
     return render(request, 'users/profile.html', context)
+
+def contact(request):
+    if request.method == 'POST':
+        form = ContactForm(request.POST)
+        if form.is_valid():
+            form.save()
+            name = form.cleaned_data.get('name')
+            email = form.cleaned_data.get('email')
+            subject = form.cleaned_data.get('subject')
+            message = form.cleaned_data.get('message')
+            send_mail(
+                subject,
+                message,
+                settings.EMAIL_HOST_USER,
+                [email],
+                fail_silently=False,
+            )
+            messages.success(request, f'Thanks {name}! We have got your query. We will get back to you soon.')
+            return redirect('contact')
+        
+    form = ContactForm()
+    context = {
+        'title': 'Contact',
+        'form': form,
+        'admin_contacts': AdminContact.objects.all()
+    }
+    return render(request, 'users/contact.html', context)
